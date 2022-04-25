@@ -1,8 +1,6 @@
-from collections.abc import MutableSequence
-
-from node import Node, DoubleLinkedNode
-
 from typing import Iterable, Any, Optional, Iterator
+from collections.abc import MutableSequence
+from node import Node, DoubleLinkedNode
 
 
 class LinkedList(MutableSequence):
@@ -109,12 +107,28 @@ class LinkedList(MutableSequence):
             raise TypeError
         if not 0 <= index <= self._len:
             raise IndexError
+        insert_node = Node(value)
+
+        if index == 0:
+            insert_node.next = self._head
+            self._head = insert_node
+            self._len += 1
+        elif index >= self._len - 1:
+            self.append(value)
+        else:
+            prev_node = self.step_by_step_on_nodes(index - 1)
+            next_node = prev_node.next
+
+            self.linked_nodes(prev_node, insert_node)
+            self.linked_nodes(insert_node, next_node)
+
+            self._len += 1
 
     def append(self, value: Any) -> None:
         """
         Добавляет значение в конец списка
         """
-        append_node = self.NodeClass(value)
+        append_node = Node(value)
 
         if self._head is None:
             self._head = self._tail = append_node
@@ -173,6 +187,9 @@ class LinkedList(MutableSequence):
             if value == item:
                 count += 1
         return count
+
+    def to_list(self):
+        pass
 
 
 class DoubleLinkedList(LinkedList):
